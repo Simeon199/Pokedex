@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+    <link rel="icon" type="image/x-icon" href="img/pokeball.png">
+    <link rel="stylesheet" href="style.css">
+    
+    
+</head>
+<body onload="init()">
+    <header>
+        <div class="header-logo">
+            <a href="index.html"><img src="img/pokeball.png" alt="pokeball"></a>
+            <h1>Pokedex</h1>
+        </div>
+        <input type="text" id="searchInput" placeholder="Suche...">
+    </header>
+    <div id="container"></div>
+    <div class="load-further-pokemons" id="furtherPokemons"><button onclick="prepareURL()">Weitere Pokemons</button></div>
+
+    <div id="pokemon-cards-zoomed-in" class="d-none"></div>
+    <footer>
+        <div class="icon-container">
+            <a href="https://www.flaticon.com/de/kostenlose-icons/pokemon" title="pokémon Icons">Pokémon Icons erstellt von Nikita Golubev - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by Roundicons - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/arrow" title="arrow icons">Arrow icons created by Kirill Kazachek - Flaticon</a>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+    <script src="html_templates.js"></script>
+    <script src="chart.js"></script>
+    <link rel="stylesheet" href="pokemonColors.css">
+</body>
+</html>
