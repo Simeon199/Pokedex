@@ -265,6 +265,23 @@ footer a {
     border-radius: 16px;
 }
 
+/* Style the scrollbar track */
+::-webkit-scrollbar {
+  width: 12px;
+  background: #202e23;
+}
+
+/* Style the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: #778f7a;
+  border-radius: 6px;
+}
+
+/* Style on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #79fc65;
+}
+
 @media(max-width: 800px){
     #pokemon-cards-zoomed-in {
         justify-content: center;
