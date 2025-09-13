@@ -261,7 +261,7 @@ function setPokemonCardsZoomedAttributes(pokemonCardsZoomed){
   pokemonCardsZoomed.classList.remove('d-none');
   pokemonCardsZoomed.style.height = '100%';
   pokemonCardsZoomed.style.width = '100%';
-  pokemonCardsZoomed.style.backgroundColor = 'rgba(0,0,0,0.4)';
+  pokemonCardsZoomed.style.backgroundColor = 'rgba(0,0,0,0.8)';
 }
 
 function unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed){

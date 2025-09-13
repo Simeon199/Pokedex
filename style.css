@@ -5,7 +5,7 @@
 
 body {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    background-color: lightgray;
+    background-color: #1bab1f7a;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -90,10 +90,13 @@ header input {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    background-color: #e2d9aeeb;
+    transition: 0.5s ease-in-out;
 }
 
 .load-further-pokemons button:hover {
-    background-color: rgb(207, 198, 198);
+    background-color: #aa9742eb;
+    transform: scale(1.175);
 }
 
 #loading-overlay {
@@ -136,6 +139,7 @@ header input {
 }
 
 #pokemon-cards-zoomed-in {
+    background-color: rgba(0, 0, 0, 0.8);
     padding-left: 24px;
     padding-right: 24px;
     gap: 24px;
@@ -171,22 +175,22 @@ header input {
     cursor: pointer;
 }
 
-.arrow_left {
+.arrow_left, 
+.arrow_right {
+    background-color: #e2d9aeeb;
     border-radius: 38px;
     border: solid black;
-    padding: 4px;
+    padding: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: 0.5s ease-in-out;
 }
 
-.arrow_right {
-    border-radius: 38px;
-    border: solid black;
-    padding: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.arrow_left:hover,
+.arrow_right:hover {
+    transform: scale(1.175);
+    background-color: #686559eb;
 }
 
 footer {
