@@ -17,10 +17,20 @@
         </div>
         <input type="text" id="searchInput" placeholder="Suche...">
     </header>
+
+    <div id="loading-overlay" class="d-none">
+        <div class="loading-spinner spinner">
+            <img src="img/pokeball.png" alt="pokeball">
+        </div>
+    </div>
+    
+
     <div id="container"></div>
-    <div class="load-further-pokemons" id="furtherPokemons"><button onclick="prepareURL()">Weitere Pokemons</button></div>
+    <div class="load-further-pokemons" id="furtherPokemons"><button onclick="prepareURL()">Load Pokemons...</button></div>
 
     <div id="pokemon-cards-zoomed-in" class="d-none"></div>
+
+
     <footer>
         <div class="icon-container">
             <a href="https://www.flaticon.com/de/kostenlose-icons/pokemon" title="pokémon Icons">Pokémon Icons erstellt von Nikita Golubev - Flaticon</a>

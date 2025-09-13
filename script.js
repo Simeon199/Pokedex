@@ -37,10 +37,25 @@ function closePokemonCard(pokemonCloseInCard, pokemonName) {
   }
 }
 
+function handleLoadingSpinnerVisibility(string){
+  if(string === 'show'){
+    document.getElementById('loading-overlay').classList.remove('d-none');
+  } else if(string === 'hide'){
+    document.getElementById('loading-overlay').classList.add('d-none');
+  }
+}
+
 async function init(){
+    handleSpinnerAndSetOverflow('show', 'hidden');
     let response = await fetch(url);
     responseAsJson = await response.json();
-    displayPokemons(responseAsJson);
+    await displayPokemons(responseAsJson);
+    handleSpinnerAndSetOverflow('hide', 'visible');
+}
+
+function handleSpinnerAndSetOverflow(stringOne, stringTwo){
+  handleLoadingSpinnerVisibility(stringOne);
+  document.body.style.overflow = stringTwo;
 }
 
 async function displayPokemons(responseAsJson){
@@ -153,7 +168,6 @@ function setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard){
 
 function createPokemonCharts(obj, access){
   let pokemonCloseInCard = document.getElementById(obj["pokemonCloseIn"]);
-  // console.log(pokemonCloseInCard.parentNode);
   pokemonCloseInCard.innerHTML += `<div class="pokemonCloseInLowerPart"></div>`;
   let pokemonCloseInLowerPart = pokemonCloseInCard.querySelector('.pokemonCloseInLowerPart');
   pokemonCloseInLowerPart.innerHTML += returnIndexTab(obj["pokemonIndexTabId"], obj["pokemonStatsId"], obj["pokemonMainBoardId"]);
@@ -362,20 +376,22 @@ function removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonClose
   arrowRight.remove();
 }
 
-function prepareURL(){
+async function prepareURL(){
     let resultArray = iterateString(url); 
     let lastCharacter = resultArray[0];
     let placeholders = resultArray[1];
     updateCharacter = Number(lastCharacter) + 20;
     updateCharacter.toString();
     url = url.slice(0, -placeholders) + updateCharacter; 
-    loadFurtherPokemons();
+    await loadFurtherPokemons();
 }
 
 async function loadFurtherPokemons(){
+    handleSpinnerAndSetOverflow('show', 'hidden');
     let response = await fetch(url);
     responseAsJson = await response.json();
-    displayPokemons(responseAsJson);
+    await displayPokemons(responseAsJson);
+    handleSpinnerAndSetOverflow('hide', 'visible');
 }
 
 function iterateString(string){
