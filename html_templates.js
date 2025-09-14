@@ -49,3 +49,11 @@ function buildPokemonContainer(pokemonID, pokemonName, pokemonImage, pokemonType
                 <img src="${pokemonImage}">
             </div>`;
 }
+
+function extractPokemonType(pokemonTypesId, access){
+  let array = access["pokemonTypes"];
+  let types = document.getElementById(pokemonTypesId);
+  for(i = 0; i < array.length; i++){
+    types.innerHTML += `<div class="type"><p>${array[i]["type"]["name"]}</p></div>`;
+  }
+}

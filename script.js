@@ -9,13 +9,96 @@ let container = document.getElementById('container');
 let pokemonLabels = ["hp", "attack", "defense", "special-attack", "special-defense", "speed"];
 
 document.addEventListener('DOMContentLoaded', (event) => {
-  const popupContainer = document.getElementById('pokemon-cards-zoomed-in');
+  let popupContainer = document.getElementById('pokemon-cards-zoomed-in');
   popupContainer.addEventListener('click', (event) => {
       if (event.target === popupContainer) {
           closePokemonCardZoomed();
       }
   });
 });
+
+async function init(){
+    handleSpinnerAndSetOverflow('show', 'hidden');
+    let response = await fetch(url);
+    responseAsJson = await response.json();
+    await displayPokemons(responseAsJson);
+    handleSpinnerAndSetOverflow('hide', 'visible');
+}
+
+async function displayPokemons(responseAsJson){
+    let pokemons = await responseAsJson['results'];
+    for(let i = 0; i < pokemons.length; i++){
+      let pokemonName = pokemons[i]['name'];
+      let pokemonURL = pokemons[i]['url'];
+      let pokemon = await fetchPokemonData(pokemonURL);
+      pokemonsArray.push(pokemonName);
+      loadPokemonInfo(pokemon, pokemonName);
+    }
+    displayPokemonInfo();
+}
+
+function loadPokemonInfo(pokemon, pokemonName){
+  let pokemonID = pokemonName + '_card';
+  let pokemonImage = pokemon["sprites"]["other"]["official-artwork"]["front_default"];
+  let pokemonTypes = pokemon["types"];
+  let pokemonStats = pokemon["stats"];
+  let mainInfo = createMainInfo(pokemon);
+  let pokemonObject = buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo);
+  pokemonRelevantInfo[pokemonName] = pokemonObject;
+}
+
+function createMainInfo(pokemonDataAsJson){
+  let height = pokemonDataAsJson["height"];
+  let weight = pokemonDataAsJson["weight"];
+  let base_experience = pokemonDataAsJson["base_experience"] ;
+  let abilities = pokemonDataAsJson["abilities"];
+  let allAbilities = extractAbilities(abilities);
+  return [height, weight, base_experience, allAbilities];
+}
+
+function extractAbilities(abilities){
+  let allAbilities = [];
+  for(let i = 0; i < abilities.length; i++){
+    let ability = abilities[i]["ability"]["name"];
+    let abilityModified = ability[0].toUpperCase() + ability.slice(1);
+    for(let j = 0; j < abilityModified.length; j++){
+      if(abilityModified.charAt(j) === '-'){
+        let chars = abilityModified.split('');
+        if(j+1 < chars.length){
+          chars[j+1] = chars[j+1].toUpperCase();
+        }
+        abilityModified = chars.join('');
+      }
+    }
+    allAbilities.push(abilityModified);
+  }
+  return allAbilities;
+}
+
+function buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo){
+  let obj = {
+    "pokemonName": pokemonName.toLowerCase(),
+    "pokemonID": pokemonID,
+    "pokemonImage": pokemonImage,
+    "pokemonTypes": pokemonTypes,
+    "pokemonStats": pokemonStats,
+    "pokemonMainInfo": mainInfo
+  }
+  return obj;
+}
+
+function displayPokemonInfo(){
+  container.innerHTML = "";
+  for(key in pokemonRelevantInfo){
+    let access = pokemonRelevantInfo[key];
+    let pokemonType = access["pokemonTypes"][0]["type"]["name"];
+    let pokemonTypesId = access["pokemonName"] + '_types';
+    container.innerHTML += buildPokemonContainer(access['pokemonID'], access["pokemonName"], access["pokemonImage"], pokemonTypesId);
+    let pokemonCard = document.getElementById(access["pokemonID"]);
+    pokemonCard.classList.add(pokemonType);
+    extractPokemonType(pokemonTypesId, access);
+  }
+}
 
 function closePokemonCardZoomed() {
   let pokemonName = pokemonClickedOn;
@@ -45,78 +128,15 @@ function handleLoadingSpinnerVisibility(string){
   }
 }
 
-async function init(){
-    handleSpinnerAndSetOverflow('show', 'hidden');
-    let response = await fetch(url);
-    responseAsJson = await response.json();
-    await displayPokemons(responseAsJson);
-    handleSpinnerAndSetOverflow('hide', 'visible');
-}
-
 function handleSpinnerAndSetOverflow(stringOne, stringTwo){
   handleLoadingSpinnerVisibility(stringOne);
   document.body.style.overflow = stringTwo;
-}
-
-async function displayPokemons(responseAsJson){
-    let pokemons = await responseAsJson['results'];
-    for(let i = 0; i < pokemons.length; i++){
-      let pokemonName = pokemons[i]['name'];
-      let pokemonURL = pokemons[i]['url'];
-      let pokemon = await fetchPokemonData(pokemonURL);
-      pokemonsArray.push(pokemonName);
-      loadPokemonInfo(pokemon, pokemonName);
-    }
-    displayPokemonInfo();
 }
 
 async function fetchPokemonData(pokemonURL){
   let pokemonData = await fetch(pokemonURL);
   let pokemonDataAsJson = await pokemonData.json();
   return pokemonDataAsJson;
-}
-
-function loadPokemonInfo(pokemon, pokemonName){
-  let pokemonID = pokemonName + '_card';
-  let pokemonImage = pokemon["sprites"]["other"]["official-artwork"]["front_default"];
-  let pokemonTypes = pokemon["types"];
-  let pokemonStats = pokemon["stats"];
-  let mainInfo = createMainInfo(pokemon);
-  let pokemonObject = buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo);
-  pokemonRelevantInfo[pokemonName] = pokemonObject;
-}
-
-function buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo){
-  let obj = {
-    "pokemonName": pokemonName.toLowerCase(),
-    "pokemonID": pokemonID,
-    "pokemonImage": pokemonImage,
-    "pokemonTypes": pokemonTypes,
-    "pokemonStats": pokemonStats,
-    "pokemonMainInfo": mainInfo
-  }
-  return obj;
-}
-
-function displayPokemonInfo(){
-  container.innerHTML = "";
-  for(key in pokemonRelevantInfo){
-    let access = pokemonRelevantInfo[key];
-    let pokemonType = access["pokemonTypes"][0]["type"]["name"];
-    let pokemonTypesId = access["pokemonName"] + '_types';
-    container.innerHTML += buildPokemonContainer(access['pokemonID'], access["pokemonName"], access["pokemonImage"], pokemonTypesId);
-    let pokemonCard = document.getElementById(access["pokemonID"]);
-    pokemonCard.classList.add(pokemonType);
-    extractPokemonType(pokemonTypesId, access);
-  }
-}
-
-function extractPokemonType(pokemonTypesId, access){
-  let array = access["pokemonTypes"];
-  let types = document.getElementById(pokemonTypesId);
-  for(i = 0; i < array.length; i++){
-    types.innerHTML += `<div class="type"><p>${array[i]["type"]["name"]}</p></div>`;
-  }
 }
 
 function openPokemonCard(pokemonName){
@@ -182,34 +202,6 @@ function createPokemonCharts(obj, access){
 function setPokemonCardsZoomedImageAndBackground(pokemonCloseInCard, pokemonImage, pokemonBackgroundColor){
   pokemonCloseInCard.innerHTML += `<img src='${pokemonImage}'>`; 
   pokemonCloseInCard.classList.add(pokemonBackgroundColor); 
-}
-
-function createMainInfo(pokemonDataAsJson){
-  let height = pokemonDataAsJson["height"];
-  let weight = pokemonDataAsJson["weight"];
-  let base_experience = pokemonDataAsJson["base_experience"] ;
-  let abilities = pokemonDataAsJson["abilities"];
-  let allAbilities = extractAbilities(abilities);
-  return [height, weight, base_experience, allAbilities];
-}
-
-function extractAbilities(abilities){
-  let allAbilities = [];
-  for(let i = 0; i < abilities.length; i++){
-    let ability = abilities[i]["ability"]["name"];
-    let abilityModified = ability[0].toUpperCase() + ability.slice(1);
-    for(let j = 0; j < abilityModified.length; j++){
-      if(abilityModified.charAt(j) === '-'){
-        let chars = abilityModified.split('');
-        if(j+1 < chars.length){
-          chars[j+1] = chars[j+1].toUpperCase();
-        }
-        abilityModified = chars.join('');
-      }
-    }
-    allAbilities.push(abilityModified);
-  }
-  return allAbilities;
 }
 
 function createPokemonStatsDataset(pokemonStats){

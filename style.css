@@ -217,7 +217,7 @@ footer a {
 
 .index_tab {
     gap: 1px;
-    background-color: #9e8832;
+    background-color: #4b8525c7;
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -233,7 +233,7 @@ footer a {
 }
 
 .statistics:hover {
-    background-color: #57470a;
+    background-color: #8f683ac7;
 }
 
 .main {
@@ -245,7 +245,7 @@ footer a {
 }
 
 .main:hover {
-    background-color: #57470a;
+    background-color: #8f683ac7;
 }
 
 .pokemonMainBoard {

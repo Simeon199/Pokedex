@@ -7,8 +7,8 @@ function displayPokemonChart(pokemonStatsCard, pokemonName, pokemonStatsDataset)
         datasets: [{
           label: pokemonName + ' Stats', 
           data: pokemonStatsDataset,
-          backgroundColor: 'rgba(90, 150, 192, 1)',
-          borderColor: 'rgba(90, 150, 192, 1)',
+          backgroundColor: 'rgba(70, 128, 136, 1)',
+          borderColor: 'rgba(70, 128, 136, 1)',
           borderWidth: 1
         }]
       },
