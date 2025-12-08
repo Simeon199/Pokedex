@@ -8,6 +8,7 @@ let pokemonRelevantInfo = {};
 let pokemonArraySearched = [];
 let container = document.getElementById('container');
 let pokemonLabels = ["hp", "attack", "defense", "special-attack", "special-defense", "speed"];
+let currentPokemonIndex = 0;
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,11 +25,21 @@ document.addEventListener('DOMContentLoaded', () => {
  * Shows the loading spinner, fetches data from the API, displays Pokemons, and hides the spinner.
  */
 async function init() {
-  handleSpinnerAndSetOverflow('show', 'hidden');
-  let response = await fetch(url);
-  let responseAsJson = await response.json();
-  await displayPokemons(responseAsJson);
-  handleSpinnerAndSetOverflow('hide', 'visible');
+  try {
+    handleSpinnerAndSetOverflow('show', 'hidden');
+    let response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    let responseAsJson = await response.json();
+    await displayPokemons(responseAsJson);
+    currentPokemonIndex = 20;
+    handleSpinnerAndSetOverflow('hide', 'visible');
+  } catch (error) {
+    console.error('Error fetching Pokemon data:', error);
+    // Optionally, display an error message to the user
+    alert('Failed to load Pokemon data. Please check your internet connection and try again.');
+  }
 }
 
 
