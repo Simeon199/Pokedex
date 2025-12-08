@@ -1,4 +1,5 @@
-let url = 'https://pokeapi.co/api/v2/pokemon?limit=20&offset=0'; 
+// Global variables
+let url = 'https://pokeapi.co/api/v2/pokemon?limit=20&offset=0';
 let searchInput = document.getElementById('searchInput');
 let pokemonsArray = [];
 let isPokemonInCloseUp = false;
@@ -8,36 +9,38 @@ let pokemonArraySearched = [];
 let container = document.getElementById('container');
 let pokemonLabels = ["hp", "attack", "defense", "special-attack", "special-defense", "speed"];
 
-document.addEventListener('DOMContentLoaded', (event) => {
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
   let popupContainer = document.getElementById('pokemon-cards-zoomed-in');
   popupContainer.addEventListener('click', (event) => {
-      if (event.target === popupContainer) {
-          closePokemonCardZoomed();
-      }
+    if (event.target === popupContainer) {
+      closePokemonCardZoomed();
+    }
   });
 });
 
-async function init(){
-    handleSpinnerAndSetOverflow('show', 'hidden');
-    let response = await fetch(url);
-    responseAsJson = await response.json();
-    await displayPokemons(responseAsJson);
-    handleSpinnerAndSetOverflow('hide', 'visible');
+async function init() {
+  handleSpinnerAndSetOverflow('show', 'hidden');
+  let response = await fetch(url);
+  let responseAsJson = await response.json();
+  await displayPokemons(responseAsJson);
+  handleSpinnerAndSetOverflow('hide', 'visible');
 }
 
-async function displayPokemons(responseAsJson){
-    let pokemons = await responseAsJson['results'];
-    for(let i = 0; i < pokemons.length; i++){
-      let pokemonName = pokemons[i]['name'];
-      let pokemonURL = pokemons[i]['url'];
-      let pokemon = await fetchPokemonData(pokemonURL);
-      pokemonsArray.push(pokemonName);
-      loadPokemonInfo(pokemon, pokemonName);
-    }
-    displayPokemonInfo();
+// Data fetching and processing
+async function displayPokemons(responseAsJson) {
+  let pokemons = responseAsJson['results'];
+  for (let i = 0; i < pokemons.length; i++) {
+    let pokemonName = pokemons[i]['name'];
+    let pokemonURL = pokemons[i]['url'];
+    let pokemon = await fetchPokemonData(pokemonURL);
+    pokemonsArray.push(pokemonName);
+    loadPokemonInfo(pokemon, pokemonName);
+  }
+  displayPokemonInfo();
 }
 
-function loadPokemonInfo(pokemon, pokemonName){
+function loadPokemonInfo(pokemon, pokemonName) {
   let pokemonID = pokemonName + '_card';
   let pokemonImage = pokemon["sprites"]["other"]["official-artwork"]["front_default"];
   let pokemonTypes = pokemon["types"];
@@ -47,49 +50,55 @@ function loadPokemonInfo(pokemon, pokemonName){
   pokemonRelevantInfo[pokemonName] = pokemonObject;
 }
 
-function createMainInfo(pokemonDataAsJson){
+function createMainInfo(pokemonDataAsJson) {
   let height = pokemonDataAsJson["height"];
   let weight = pokemonDataAsJson["weight"];
-  let base_experience = pokemonDataAsJson["base_experience"] ;
+  let baseExperience = pokemonDataAsJson["base_experience"];
   let abilities = pokemonDataAsJson["abilities"];
   let allAbilities = extractAbilities(abilities);
-  return [height, weight, base_experience, allAbilities];
+  return [height, weight, baseExperience, allAbilities];
 }
 
-function extractAbilities(abilities){
+function extractAbilities(abilities) {
   let allAbilities = [];
-  for(let i = 0; i < abilities.length; i++){
+  for (let i = 0; i < abilities.length; i++) {
     let ability = abilities[i]["ability"]["name"];
-    let abilityModified = ability[0].toUpperCase() + ability.slice(1);
-    for(let j = 0; j < abilityModified.length; j++){
-      if(abilityModified.charAt(j) === '-'){
-        let chars = abilityModified.split('');
-        if(j+1 < chars.length){
-          chars[j+1] = chars[j+1].toUpperCase();
-        }
-        abilityModified = chars.join('');
-      }
-    }
-    allAbilities.push(abilityModified);
+    let capitalized = capitalizeFirstLetter(ability);
+    let formatted = handleHyphensInAbility(capitalized);
+    allAbilities.push(formatted);
   }
   return allAbilities;
 }
 
-function buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo){
-  let obj = {
+function capitalizeFirstLetter(ability) {
+  return ability[0].toUpperCase() + ability.slice(1);
+}
+
+function handleHyphensInAbility(ability) {
+  let chars = ability.split('');
+  for (let j = 0; j < chars.length; j++) {
+    if (chars[j] === '-' && j + 1 < chars.length) {
+      chars[j + 1] = chars[j + 1].toUpperCase();
+    }
+  }
+  return chars.join('').replace(/-/g, '');
+}
+
+function buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo) {
+  return {
     "pokemonName": pokemonName.toLowerCase(),
     "pokemonID": pokemonID,
     "pokemonImage": pokemonImage,
     "pokemonTypes": pokemonTypes,
     "pokemonStats": pokemonStats,
     "pokemonMainInfo": mainInfo
-  }
-  return obj;
+  };
 }
 
-function displayPokemonInfo(){
+// UI rendering
+function displayPokemonInfo() {
   container.innerHTML = "";
-  for(key in pokemonRelevantInfo){
+  for (let key in pokemonRelevantInfo) {
     let access = pokemonRelevantInfo[key];
     let pokemonType = access["pokemonTypes"][0]["type"]["name"];
     let pokemonTypesId = access["pokemonName"] + '_types';
@@ -100,6 +109,22 @@ function displayPokemonInfo(){
   }
 }
 
+function buildPokemonContainer(pokemonID, pokemonName, pokemonImage, pokemonTypesId) {
+  // Assuming buildPokemonContainer is defined elsewhere or needs to be added
+  return `<div id="${pokemonID}" class="pokemon-card">
+            <img src="${pokemonImage}" alt="${pokemonName}">
+            <div id="${pokemonTypesId}"></div>
+          </div>`;
+}
+
+function extractPokemonType(pokemonTypesId, access) {
+  let typesContainer = document.getElementById(pokemonTypesId);
+  for (let type of access["pokemonTypes"]) {
+    typesContainer.innerHTML += `<span class="type">${type["type"]["name"]}</span>`;
+  }
+}
+
+// Pokemon card zoom/close logic
 function closePokemonCardZoomed() {
   let pokemonName = pokemonClickedOn;
   let pokemonCloseIn = pokemonName + '_close_In';
@@ -108,40 +133,21 @@ function closePokemonCardZoomed() {
 }
 
 function closePokemonCard(pokemonCloseInCard, pokemonName) {
-  if (isPokemonInCloseUp === true) {
-      let pokemonCardsZoomed = document.getElementById('pokemon-cards-zoomed-in');
-      let pokemonID = pokemonName + '_card';
-      let pokemon = document.getElementById(pokemonID);
-      let arrowLeft = document.getElementById('arrow_left');
-      let arrowRight = document.getElementById('arrow_right');
-      unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed);
-      removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonCloseInCard, arrowRight);
-      setRemainingAttributesInClosePokemon();
+  if (isPokemonInCloseUp) {
+    let pokemonCardsZoomed = document.getElementById('pokemon-cards-zoomed-in');
+    let pokemonID = pokemonName + '_card';
+    let pokemon = document.getElementById(pokemonID);
+    let arrowLeft = document.getElementById('arrow_left');
+    let arrowRight = document.getElementById('arrow_right');
+    unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed);
+    removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonCloseInCard, arrowRight);
+    setRemainingAttributesInClosePokemon();
   }
 }
 
-function handleLoadingSpinnerVisibility(string){
-  if(string === 'show'){
-    document.getElementById('loading-overlay').classList.remove('d-none');
-  } else if(string === 'hide'){
-    document.getElementById('loading-overlay').classList.add('d-none');
-  }
-}
-
-function handleSpinnerAndSetOverflow(stringOne, stringTwo){
-  handleLoadingSpinnerVisibility(stringOne);
-  document.body.style.overflow = stringTwo;
-}
-
-async function fetchPokemonData(pokemonURL){
-  let pokemonData = await fetch(pokemonURL);
-  let pokemonDataAsJson = await pokemonData.json();
-  return pokemonDataAsJson;
-}
-
-function openPokemonCard(pokemonName){
+function openPokemonCard(pokemonName) {
   let access = pokemonRelevantInfo[pokemonName];
-  if(isPokemonInCloseUp === false){
+  if (!isPokemonInCloseUp) {
     let pokemon = document.getElementById(access["pokemonID"]);
     pokemon.classList.add('d-none');
     pokemonClickedOn = access["pokemonName"];
@@ -150,21 +156,20 @@ function openPokemonCard(pokemonName){
   }
 }
 
-function buildPokemonCardInCloseObject(access, resultArray){
-  let obj = {
+function buildPokemonCardInCloseObject(access, resultArray) {
+  return {
     'pokemonCardsZoomed': document.getElementById("pokemon-cards-zoomed-in"),
     'pokemonCloseIn': access["pokemonName"] + '_close_In',
     'previousPokemon': resultArray[0],
-    'nextPokemon': resultArray[1], 
+    'nextPokemon': resultArray[1],
     'pokemonStatsDataset': createPokemonStatsDataset(access["pokemonStats"]),
     'pokemonStatsId': access["pokemonName"] + 'StatsChart',
     'pokemonMainBoardId': access["pokemonName"] + 'MainBoard',
     'pokemonIndexTabId': access["pokemonName"] + '_index_tab'
-  }
-  return obj;
+  };
 }
 
-function getPokemonCardInClose(access){
+function getPokemonCardInClose(access) {
   let resultArray = returnNeighbouringPokemons(access["pokemonName"]);
   let obj = buildPokemonCardInCloseObject(access, resultArray);
   setLeftArrowAndTitle(obj, access);
@@ -172,13 +177,13 @@ function getPokemonCardInClose(access){
   setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard);
 }
 
-function setLeftArrowAndTitle(obj, access){
+function setLeftArrowAndTitle(obj, access) {
   setPokemonCardsZoomedAttributes(obj["pokemonCardsZoomed"]);
   getPokemonCardsZoomedArrowLeft(obj["pokemonCardsZoomed"], obj["previousPokemon"], obj["pokemonCloseIn"], access["pokemonName"]);
   getPokemonCardsZoomedTitle(obj["pokemonCloseIn"], obj["pokemonCardsZoomed"], access["pokemonName"]);
 }
 
-function setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard){
+function setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard) {
   getPokemonCardsZoomedTypes(pokemonCloseInCard, access["pokemonTypes"]);
   setPokemonCardsZoomedImageAndBackground(pokemonCloseInCard, access["pokemonImage"], access["pokemonTypes"][0]["type"]["name"]);
   getPokemonCardsZoomedArrowRight(obj["pokemonCardsZoomed"], obj["nextPokemon"], obj["pokemonCloseIn"], access["pokemonName"]);
@@ -186,77 +191,76 @@ function setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard){
   setRemainingAttributesInOpenPokemon();
 }
 
-function createPokemonCharts(obj, access){
+function createPokemonCharts(obj, access) {
   let pokemonCloseInCard = document.getElementById(obj["pokemonCloseIn"]);
   pokemonCloseInCard.innerHTML += `<div class="pokemonCloseInLowerPart"></div>`;
-  let pokemonCloseInLowerPart = pokemonCloseInCard.querySelector('.pokemonCloseInLowerPart');
-  pokemonCloseInLowerPart.innerHTML += returnIndexTab(obj["pokemonIndexTabId"], obj["pokemonStatsId"], obj["pokemonMainBoardId"]);
-  pokemonCloseInLowerPart.innerHTML += returnPokemonMainBoard(obj["pokemonMainBoardId"], access["pokemonMainInfo"]);
-  let canvasElement = document.createElement('canvas');
-  setCanvasElementAttributes(canvasElement, obj["pokemonStatsId"]);
-  pokemonCloseInLowerPart.appendChild(canvasElement);
-  let pokemonStatsCard = document.getElementById(obj["pokemonStatsId"]);
-  displayPokemonChart(pokemonStatsCard, access["pokemonName"], obj["pokemonStatsDataset"]);
+  let lowerPart = pokemonCloseInCard.querySelector('.pokemonCloseInLowerPart');
+  lowerPart.innerHTML += returnIndexTab(obj["pokemonIndexTabId"], obj["pokemonStatsId"], obj["pokemonMainBoardId"]);
+  lowerPart.innerHTML += returnPokemonMainBoard(obj["pokemonMainBoardId"], access["pokemonMainInfo"]);
+  let canvas = document.createElement('canvas');
+  setCanvasElementAttributes(canvas, obj["pokemonStatsId"]);
+  lowerPart.appendChild(canvas);
+  let statsCard = document.getElementById(obj["pokemonStatsId"]);
+  displayPokemonChart(statsCard, access["pokemonName"], obj["pokemonStatsDataset"]);
 }
 
-function setPokemonCardsZoomedImageAndBackground(pokemonCloseInCard, pokemonImage, pokemonBackgroundColor){
-  pokemonCloseInCard.innerHTML += `<img src='${pokemonImage}'>`; 
-  pokemonCloseInCard.classList.add(pokemonBackgroundColor); 
+function setPokemonCardsZoomedImageAndBackground(pokemonCloseInCard, pokemonImage, backgroundColor) {
+  pokemonCloseInCard.innerHTML += `<img src='${pokemonImage}'>`;
+  pokemonCloseInCard.classList.add(backgroundColor);
 }
 
-function createPokemonStatsDataset(pokemonStats){
-  pokemonStatsDataset = [];
-  for(i=0; i < pokemonStats.length; i++){
-    let pokemonStat = pokemonStats[i]["base_stat"];
-    pokemonStatsDataset.push(pokemonStat);
+function createPokemonStatsDataset(pokemonStats) {
+  let dataset = [];
+  for (let i = 0; i < pokemonStats.length; i++) {
+    dataset.push(pokemonStats[i]["base_stat"]);
   }
-  return pokemonStatsDataset;
+  return dataset;
 }
 
-function getPokemonMainBoard(pokemonStatsId, pokemonMainBoardId){
-  let pokemonStatsCard = document.getElementById(pokemonStatsId);
-  let pokemonMainBoardCard = document.getElementById(pokemonMainBoardId);
-  if(pokemonStatsCard.style.display != 'none'){
-    pokemonStatsCard.style.display = 'none';
-    pokemonMainBoardCard.style.display = 'flex';
-  }
-}
-
-function getPokemonStatBoard(pokemonStatsId, pokemonMainBoardId){
-  let pokemonStatsCard = document.getElementById(pokemonStatsId);
-  let pokemonMainBoardCard = document.getElementById(pokemonMainBoardId);
-  if(pokemonMainBoardCard.style.display != 'none'){
-    pokemonMainBoardCard.style.display = 'none';
-    pokemonStatsCard.style.display = 'block';
+function getPokemonMainBoard(pokemonStatsId, pokemonMainBoardId) {
+  let statsCard = document.getElementById(pokemonStatsId);
+  let mainBoardCard = document.getElementById(pokemonMainBoardId);
+  if (statsCard.style.display !== 'none') {
+    statsCard.style.display = 'none';
+    mainBoardCard.style.display = 'flex';
   }
 }
 
-function setCanvasElementAttributes(canvasElement, pokemonStatsId){
+function getPokemonStatBoard(pokemonStatsId, pokemonMainBoardId) {
+  let statsCard = document.getElementById(pokemonStatsId);
+  let mainBoardCard = document.getElementById(pokemonMainBoardId);
+  if (mainBoardCard.style.display !== 'none') {
+    mainBoardCard.style.display = 'none';
+    statsCard.style.display = 'block';
+  }
+}
+
+function setCanvasElementAttributes(canvasElement, pokemonStatsId) {
   canvasElement.id = pokemonStatsId;
   canvasElement.className = 'canvasElement';
   canvasElement.style.display = "none";
 }
 
-function setRemainingAttributesInOpenPokemon(){
+function setRemainingAttributesInOpenPokemon() {
   document.body.style.overflow = 'hidden';
   container.classList.add('no-click');
   isPokemonInCloseUp = true;
 }
 
-function getPokemonCardsZoomedTypes(pokemonCloseInCard, pokemonTypes){
-  for(let j=0; j < pokemonTypes.length; j++){
-    pokemonCloseInCard.innerHTML += `<div class="types">${pokemonTypes[j]["type"]["name"]}</div>`; 
+function getPokemonCardsZoomedTypes(pokemonCloseInCard, pokemonTypes) {
+  for (let j = 0; j < pokemonTypes.length; j++) {
+    pokemonCloseInCard.innerHTML += `<div class="types">${pokemonTypes[j]["type"]["name"]}</div>`;
   }
 }
 
-function setPokemonCardsZoomedAttributes(pokemonCardsZoomed){
+function setPokemonCardsZoomedAttributes(pokemonCardsZoomed) {
   pokemonCardsZoomed.classList.remove('d-none');
   pokemonCardsZoomed.style.height = '100%';
   pokemonCardsZoomed.style.width = '100%';
   pokemonCardsZoomed.style.backgroundColor = 'rgba(0,0,0,0.8)';
 }
 
-function unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed){
+function unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed) {
   pokemonCardsZoomed.style.height = '0';
   pokemonCardsZoomed.style.width = '0';
   pokemonCardsZoomed.style.backgroundColor = '';
@@ -264,215 +268,189 @@ function unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed){
   container.classList.remove('no-click');
 }
 
-function returnNeighbouringPokemons(pokemonName){
-  let indexPokemonName = pokemonsArray.indexOf(pokemonName);
-  let resultArray = returnRightPokemonIndices(indexPokemonName);
-  let previousPokemonIndex = resultArray[0];
-  let nextPokemonIndex = resultArray[1];
-  let nextPokemon = pokemonsArray[nextPokemonIndex];
-  let previousPokemon = pokemonsArray[previousPokemonIndex];
-  let resultPokemonArray = [previousPokemon, nextPokemon];
-  return resultPokemonArray; 
+function returnNeighbouringPokemons(pokemonName) {
+  let index = pokemonsArray.indexOf(pokemonName);
+  let resultArray = returnRightPokemonIndices(index);
+  let previous = pokemonsArray[resultArray[0]];
+  let next = pokemonsArray[resultArray[1]];
+  return [previous, next];
 }
 
-function returnRightPokemonIndices(indexPokemonName){
-  if(indexPokemonName == 0){
-    let previousPokemonIndex = pokemonsArray.length - 1;
-    let nextPokemonIndex = 1;
-    resultArray = [previousPokemonIndex, nextPokemonIndex];
-  } else if(indexPokemonName == pokemonsArray.length-1){
-    let nextPokemonIndex = 0;
-    let previousPokemonIndex = indexPokemonName - 1;
-    resultArray = [previousPokemonIndex, nextPokemonIndex];
+function returnRightPokemonIndices(index) {
+  if (index === 0) {
+    return [pokemonsArray.length - 1, 1];
+  } else if (index === pokemonsArray.length - 1) {
+    return [index - 1, 0];
   } else {
-    let nextPokemonIndex = indexPokemonName + 1;
-    let previousPokemonIndex = indexPokemonName - 1;
-    resultArray = [previousPokemonIndex, nextPokemonIndex];
+    return [index - 1, index + 1];
   }
-  return resultArray;
 }
 
-function showNextPokemon(nextPokemon, pokemonCloseIn, pokemonName){
+function showNextPokemon(nextPokemon, pokemonCloseIn, pokemonName) {
   let pokemonCloseInCard = document.getElementById(pokemonCloseIn);
-  if(pokemonArraySearched.length == 0){
+  if (pokemonArraySearched.length === 0) {
     closePokemonCard(pokemonCloseInCard, pokemonName);
     openPokemonCard(nextPokemon);
   } else {
-    let pokemonIndex = pokemonArraySearched.indexOf(pokemonName);
-    let resultArray = navigateThroughSearchedArray(pokemonIndex, increase=true);
-    let newNextPokemon = resultArray[1];
+    let index = pokemonArraySearched.indexOf(pokemonName);
+    let newNext = getNextPokemonInSearch(index);
     closePokemonCard(pokemonCloseInCard, pokemonName);
-    openPokemonCard(newNextPokemon);
+    openPokemonCard(newNext);
   }
 }
 
-function navigateThroughSearchedArray(pokemonIndex, increase){
-  let nextPokemon = '';
-  let previousPokemon = '';
-  if(pokemonArraySearched.length == 1){
-    nextPokemon = previousPokemon = pokemonArraySearched[0]; 
-  } else if (pokemonArraySearched.length == 2 && pokemonIndex == 0){
-    nextPokemon = previousPokemon = pokemonArraySearched[1];
-  } else if (pokemonArraySearched.length == 2 && pokemonIndex == 1){
-    nextPokemon = previousPokemon = pokemonArraySearched[0];
-  } else {
-    previousPokemon = checkCasesForNeighbouringPokemons(nextPokemon, previousPokemon, pokemonIndex, increase)[0];
-    nextPokemon = checkCasesForNeighbouringPokemons(nextPokemon, previousPokemon, pokemonIndex, increase)[1];
-  }
-  resultArray = [previousPokemon, nextPokemon];
-  return resultArray;
+function getNextPokemonInSearch(index) {
+  if (pokemonArraySearched.length === 1) return pokemonArraySearched[0];
+  if (index === pokemonArraySearched.length - 1) return pokemonArraySearched[0];
+  return pokemonArraySearched[index + 1];
 }
 
-function checkCasesForNeighbouringPokemons(nextPokemon, previousPokemon, pokemonIndex, increase){
-  if(pokemonIndex == pokemonArraySearched.length - 1 && increase == true){
-    nextPokemon = pokemonArraySearched[0];
-    previousPokemon = pokemonArraySearched[pokemonArraySearched.length - 2];
-  } else if(pokemonIndex == 0 && increase == false){
-    nextPokemon = pokemonArraySearched[1];
-    previousPokemon = pokemonArraySearched[pokemonArraySearched.length - 1];
-  } else if(pokemonIndex == 0 && increase == true){
-    nextPokemon = pokemonArraySearched[1];
-    previousPokemon = pokemonArraySearched[pokemonArraySearched.length - 1];
-  } else {
-    nextPokemon = pokemonArraySearched[pokemonIndex + 1];
-    previousPokemon = pokemonArraySearched[pokemonIndex - 1];
-  }
-  resultArray = [previousPokemon, nextPokemon]
-  return resultArray;
-}
-
-function showPreviousPokemon(previousPokemon, pokemonCloseIn, pokemonName){
+function showPreviousPokemon(previousPokemon, pokemonCloseIn, pokemonName) {
   let pokemonCloseInCard = document.getElementById(pokemonCloseIn);
-  if(pokemonArraySearched.length == 0){
+  if (pokemonArraySearched.length === 0) {
     closePokemonCard(pokemonCloseInCard, pokemonName);
     openPokemonCard(previousPokemon);
   } else {
-    let pokemonIndex = pokemonArraySearched.indexOf(pokemonName);
-    let resultArray = navigateThroughSearchedArray(pokemonIndex, increase=false);
-    let newPreviousPokemon = resultArray[0];
+    let index = pokemonArraySearched.indexOf(pokemonName);
+    let newPrevious = getPreviousPokemonInSearch(index);
     closePokemonCard(pokemonCloseInCard, pokemonName);
-    openPokemonCard(newPreviousPokemon);
+    openPokemonCard(newPrevious);
   }
 }
 
-function setRemainingAttributesInClosePokemon(){
+function getPreviousPokemonInSearch(index) {
+  if (pokemonArraySearched.length === 1) return pokemonArraySearched[0];
+  if (index === 0) return pokemonArraySearched[pokemonArraySearched.length - 1];
+  return pokemonArraySearched[index - 1];
+}
+
+function setRemainingAttributesInClosePokemon() {
   pokemonClickedOn = '';
   isPokemonInCloseUp = false;
   document.body.style.overflow = 'auto';
 }
 
-function removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonCloseInCard, arrowRight){
+function removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonCloseInCard, arrowRight) {
   pokemon.classList.remove('d-none');
   arrowLeft.remove();
   pokemonCloseInCard.remove();
   arrowRight.remove();
 }
 
-async function prepareURL(){
-    let resultArray = iterateString(url); 
-    let lastCharacter = resultArray[0];
-    let placeholders = resultArray[1];
-    updateCharacter = Number(lastCharacter) + 20;
-    updateCharacter.toString();
-    url = url.slice(0, -placeholders) + updateCharacter; 
-    await loadFurtherPokemons();
+// Loading more Pokemons
+async function prepareURL() {
+  let resultArray = iterateString(url);
+  let lastCharacter = resultArray[0];
+  let placeholders = resultArray[1];
+  let updateCharacter = (Number(lastCharacter) + 20).toString();
+  url = url.slice(0, -placeholders) + updateCharacter;
+  await loadFurtherPokemons();
 }
 
-async function loadFurtherPokemons(){
-    handleSpinnerAndSetOverflow('show', 'hidden');
-    let response = await fetch(url);
-    responseAsJson = await response.json();
-    await displayPokemons(responseAsJson);
-    handleSpinnerAndSetOverflow('hide', 'visible');
+async function loadFurtherPokemons() {
+  handleSpinnerAndSetOverflow('show', 'hidden');
+  let response = await fetch(url);
+  let responseAsJson = await response.json();
+  await displayPokemons(responseAsJson);
+  handleSpinnerAndSetOverflow('hide', 'visible');
 }
 
-function iterateString(string){
-    let array = [];
-    for(let i = string.length-1; i > 0; i--){
-        if(string[i] == "="){
-            j = i + 1;
-            character = string.slice(j, string.legnth);
-            placeholders = character.length;
-            array.push([character, placeholders]);
-        }
+function iterateString(string) {
+  for (let i = string.length - 1; i > 0; i--) {
+    if (string[i] === "=") {
+      let character = string.slice(i + 1);
+      let placeholders = character.length;
+      return [character, placeholders];
     }
-    return array[0];
+  }
 }
 
+// Search functionality
 searchInput.addEventListener('input', function() {
-    let searchTerm = this.value.trim().toLowerCase();
-    pokemonArraySearched = [];
-    if(searchTerm.length > 2){
-        PrepareToDisplaySearchResults(searchTerm);
-    } else {
-        removeDisplayNone();
-    }
-    disableFurtherPokemon();
+  let searchTerm = this.value.trim().toLowerCase();
+  pokemonArraySearched = [];
+  if (searchTerm.length > 2) {
+    prepareToDisplaySearchResults(searchTerm);
+  } else {
+    removeDisplayNone();
+  }
+  disableFurtherPokemon();
 });
 
-function disableFurtherPokemon(){
+function disableFurtherPokemon() {
   let furtherPokemons = document.getElementById('furtherPokemons');
-  if(searchInput.value.length > 2){
+  if (searchInput.value.length > 2) {
     furtherPokemons.classList.add('d-none');
   } else {
     furtherPokemons.classList.remove('d-none');
   }
 }
 
-function PrepareToDisplaySearchResults(searchTerm){
-    let pokemonArrayToShow = [];
-    let pokemonArrayNotToShow = [];
-    for(let index = 0; index < pokemonsArray.length; index++){
-        let pokemonName = pokemonsArray[index];
-        if(pokemonName.toLowerCase().includes(searchTerm)){
-            pokemonArrayToShow.push(pokemonName);
-        } else {
-            pokemonArrayNotToShow.push(pokemonName);
-        }
+function prepareToDisplaySearchResults(searchTerm) {
+  let toShow = [];
+  let notToShow = [];
+  for (let pokemonName of pokemonsArray) {
+    if (pokemonName.toLowerCase().includes(searchTerm)) {
+      toShow.push(pokemonName);
+    } else {
+      notToShow.push(pokemonName);
     }
-    displaySearchResults(pokemonArrayToShow, pokemonArrayNotToShow);
-    return pokemonArraySearched = pokemonArrayToShow;
+  }
+  displaySearchResults(toShow, notToShow);
+  pokemonArraySearched = toShow;
 }
 
-function displaySearchResults(pokemonArrayToShow, pokemonArrayNotToShow){
-  if(pokemonArrayToShow.length < 11){
-    iterateArray(pokemonArrayToShow, increase=true, partial=false, string='block');
-    iterateArray(pokemonArrayNotToShow, increase=true, partial=false, string='none');
+function displaySearchResults(toShow, notToShow) {
+  if (toShow.length < 11) {
+    setDisplayForArray(toShow, 'block');
+    setDisplayForArray(notToShow, 'none');
   } else {
-    iterateArray(pokemonArrayToShow, increase=true, partial=true, string='block');
-    iterateArray(pokemonArrayToShow, increase=false, partial=true, string='none');
-    iterateArray(pokemonArrayNotToShow, increase=true, partial=false, string='none');
+    setDisplayForArray(toShow.slice(0, 10), 'block');
+    setDisplayForArray(toShow.slice(10), 'none');
+    setDisplayForArray(notToShow, 'none');
   }
 }
 
-function iterateArray(array, increase, partial, string){
-  if(increase == true && partial == false){
-    for(i = 0; i < array.length; i++){
-      setVariables(array, i, string);
-    }
-  } else if(increase == true && partial == true){
-    for(i = 0; i < 10; i++){
-      setVariables(array, i, string);
-    }
-  } else if(increase == false && partial == true){
-    for(i = array.length; i > 9; i--){
-      setVariables(array, i, string);
-    }
+function setDisplayForArray(array, displayValue) {
+  for (let pokemonName of array) {
+    let pokemonID = pokemonName + '_card';
+    let pokemon = document.getElementById(pokemonID);
+    pokemon.style.display = displayValue;
   }
 }
 
-function setVariables(array, i, string){
-  let pokemonName = array[i];
-  let pokemonID = pokemonName + '_card';
-  let pokemon = document.getElementById(pokemonID);
-  pokemon.style.display = string; 
+function removeDisplayNone() {
+  for (let pokemonName of pokemonsArray) {
+    let pokemonID = pokemonName + '_card';
+    let pokemon = document.getElementById(pokemonID);
+    pokemon.style.display = 'block';
+  }
 }
 
-function removeDisplayNone(){
-    for(let i = 0; i < pokemonsArray.length; i++){
-        let pokemonName = pokemonsArray[i];
-        let pokemonID = pokemonName + '_card';
-        let pokemon = document.getElementById(pokemonID);
-        pokemon.style.display = 'block';
-    }
+// Utility functions
+function handleLoadingSpinnerVisibility(action) {
+  let overlay = document.getElementById('loading-overlay');
+  if (action === 'show') {
+    overlay.classList.remove('d-none');
+  } else if (action === 'hide') {
+    overlay.classList.add('d-none');
+  }
 }
+
+function handleSpinnerAndSetOverflow(action, overflow) {
+  handleLoadingSpinnerVisibility(action);
+  document.body.style.overflow = overflow;
+}
+
+async function fetchPokemonData(pokemonURL) {
+  let response = await fetch(pokemonURL);
+  return await response.json();
+}
+
+// Placeholder functions (assuming they exist in html_templates.js or elsewhere)
+function returnIndexTab(tabId, statsId, mainBoardId) { /* Implementation */ }
+function returnPokemonMainBoard(boardId, mainInfo) { /* Implementation */ }
+function getPokemonCardsZoomedArrowLeft(container, prev, closeIn, name) { /* Implementation */ }
+function getPokemonCardsZoomedTitle(closeIn, container, name) { /* Implementation */ }
+function getPokemonCardsZoomedArrowRight(container, next, closeIn, name) { /* Implementation */ }
+function displayPokemonChart(card, name, dataset) { /* Implementation */ }
