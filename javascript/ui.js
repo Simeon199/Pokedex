@@ -23,7 +23,6 @@ function displayPokemonInfo() {
  * @returns {string} The HTML string for the Pokemon card.
  */
 function buildPokemonContainer(pokemonID, pokemonName, pokemonImage, pokemonTypesId) {
-  // Assuming buildPokemonContainer is defined elsewhere or needs to be added
   return `<div id="${pokemonID}" class="pokemon-card">
             <img src="${pokemonImage}" alt="${pokemonName}">
             <div id="${pokemonTypesId}"></div>

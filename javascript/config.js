@@ -30,3 +30,20 @@ async function init() {
   await displayPokemons(responseAsJson);
   handleSpinnerAndSetOverflow('hide', 'visible');
 }
+
+
+function handleSpinnerAndSetOverflow(stringOne, stringTwo){
+  handleLoadingSpinnerVisibility(stringOne);
+  document.body.style.overflow = stringTwo;
+}
+
+function handleLoadingSpinnerVisibility(string){
+  if(string === 'show'){
+    document.getElementById('loading-overlay').classList.remove('d-none');
+  } else if(string === 'hide'){
+    document.getElementById('loading-overlay').classList.add('d-none');
+  }
+}
+
+// Initialize the app when the page loads
+window.addEventListener('load', init);

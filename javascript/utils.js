@@ -217,3 +217,16 @@ function formatBytes(bytes) {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
+
+/**
+ * Iterates through the string to find the last number and its length.
+ * @param {string} str - The string to iterate.
+ * @returns {Array} Array containing the last number as string and its length.
+ */
+function iterateString(str) {
+  let match = str.match(/(\d+)$/);
+  if (match) {
+    return [match[1], match[1].length];
+  }
+  return ['', 0];
+}

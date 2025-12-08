@@ -1,7 +1,7 @@
 /**
  * Loads more Pokemon data when the "Load More" button is clicked.
  */
-function loadMorePokemon() {
+function loadFurtherPokemons() {
   if (currentPokemonIndex < 151) {
     let start = currentPokemonIndex;
     let end = Math.min(currentPokemonIndex + 20, 151);
@@ -11,6 +11,19 @@ function loadMorePokemon() {
     let furtherPokemons = document.getElementById('furtherPokemons');
     furtherPokemons.classList.add('d-none');
   }
+}
+
+/**
+ * Prepares the URL for loading more Pokemon by incrementing the offset.
+ */
+async function prepareURL() {
+  let resultArray = iterateString(url);
+  let lastCharacter = resultArray[0];
+  let placeholders = resultArray[1];
+  let updateCharacter = Number(lastCharacter) + 20;
+  updateCharacter = updateCharacter.toString();
+  url = url.slice(0, -placeholders) + updateCharacter;
+  await loadFurtherPokemons();
 }
 
 /**
