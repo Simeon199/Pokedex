@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+/**
+ * Initializes the application by fetching and displaying the initial set of Pokemons.
+ * Shows the loading spinner, fetches data from the API, displays Pokemons, and hides the spinner.
+ */
 async function init() {
   handleSpinnerAndSetOverflow('show', 'hidden');
   let response = await fetch(url);
@@ -28,6 +32,10 @@ async function init() {
 }
 
 // Data fetching and processing
+/**
+ * Fetches and displays a list of Pokemons from the API response.
+ * @param {Object} responseAsJson - The JSON response from the Pokemon API.
+ */
 async function displayPokemons(responseAsJson) {
   let pokemons = responseAsJson['results'];
   for (let i = 0; i < pokemons.length; i++) {
@@ -40,6 +48,11 @@ async function displayPokemons(responseAsJson) {
   displayPokemonInfo();
 }
 
+/**
+ * Loads and stores detailed information for a single Pokemon.
+ * @param {Object} pokemon - The Pokemon data object from the API.
+ * @param {string} pokemonName - The name of the Pokemon.
+ */
 function loadPokemonInfo(pokemon, pokemonName) {
   let pokemonID = pokemonName + '_card';
   let pokemonImage = pokemon["sprites"]["other"]["official-artwork"]["front_default"];
@@ -50,6 +63,11 @@ function loadPokemonInfo(pokemon, pokemonName) {
   pokemonRelevantInfo[pokemonName] = pokemonObject;
 }
 
+/**
+ * Creates main information array for a Pokemon including height, weight, base experience, and abilities.
+ * @param {Object} pokemonDataAsJson - The Pokemon data object.
+ * @returns {Array} An array containing height, weight, base experience, and abilities.
+ */
 function createMainInfo(pokemonDataAsJson) {
   let height = pokemonDataAsJson["height"];
   let weight = pokemonDataAsJson["weight"];
@@ -59,6 +77,11 @@ function createMainInfo(pokemonDataAsJson) {
   return [height, weight, baseExperience, allAbilities];
 }
 
+/**
+ * Extracts and formats abilities from the Pokemon data.
+ * @param {Array} abilities - Array of ability objects.
+ * @returns {Array} Array of formatted ability names.
+ */
 function extractAbilities(abilities) {
   let allAbilities = [];
   for (let i = 0; i < abilities.length; i++) {
@@ -70,10 +93,20 @@ function extractAbilities(abilities) {
   return allAbilities;
 }
 
+/**
+ * Capitalizes the first letter of a string.
+ * @param {string} ability - The ability name.
+ * @returns {string} The ability name with the first letter capitalized.
+ */
 function capitalizeFirstLetter(ability) {
   return ability[0].toUpperCase() + ability.slice(1);
 }
 
+/**
+ * Handles hyphens in ability names by capitalizing the letter after each hyphen and removing hyphens.
+ * @param {string} ability - The ability name with possible hyphens.
+ * @returns {string} The formatted ability name.
+ */
 function handleHyphensInAbility(ability) {
   let chars = ability.split('');
   for (let j = 0; j < chars.length; j++) {
@@ -84,6 +117,16 @@ function handleHyphensInAbility(ability) {
   return chars.join('').replace(/-/g, '');
 }
 
+/**
+ * Builds a detailed object for a Pokemon with all relevant information.
+ * @param {string} pokemonName - The name of the Pokemon.
+ * @param {string} pokemonID - The ID for the Pokemon card.
+ * @param {string} pokemonImage - The URL of the Pokemon image.
+ * @param {Array} pokemonTypes - Array of Pokemon types.
+ * @param {Array} pokemonStats - Array of Pokemon stats.
+ * @param {Array} mainInfo - Main information array.
+ * @returns {Object} An object containing all Pokemon details.
+ */
 function buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo) {
   return {
     "pokemonName": pokemonName.toLowerCase(),
@@ -96,6 +139,9 @@ function buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, 
 }
 
 // UI rendering
+/**
+ * Displays all Pokemon information in the container by rendering each Pokemon card.
+ */
 function displayPokemonInfo() {
   container.innerHTML = "";
   for (let key in pokemonRelevantInfo) {
@@ -109,6 +155,14 @@ function displayPokemonInfo() {
   }
 }
 
+/**
+ * Builds the HTML string for a Pokemon container.
+ * @param {string} pokemonID - The ID for the Pokemon card.
+ * @param {string} pokemonName - The name of the Pokemon.
+ * @param {string} pokemonImage - The URL of the Pokemon image.
+ * @param {string} pokemonTypesId - The ID for the types container.
+ * @returns {string} The HTML string for the Pokemon card.
+ */
 function buildPokemonContainer(pokemonID, pokemonName, pokemonImage, pokemonTypesId) {
   // Assuming buildPokemonContainer is defined elsewhere or needs to be added
   return `<div id="${pokemonID}" class="pokemon-card">
@@ -117,6 +171,11 @@ function buildPokemonContainer(pokemonID, pokemonName, pokemonImage, pokemonType
           </div>`;
 }
 
+/**
+ * Extracts and displays Pokemon types in the specified container.
+ * @param {string} pokemonTypesId - The ID of the types container.
+ * @param {Object} access - The Pokemon access object.
+ */
 function extractPokemonType(pokemonTypesId, access) {
   let typesContainer = document.getElementById(pokemonTypesId);
   for (let type of access["pokemonTypes"]) {
@@ -125,6 +184,9 @@ function extractPokemonType(pokemonTypesId, access) {
 }
 
 // Pokemon card zoom/close logic
+/**
+ * Closes the zoomed-in Pokemon card view.
+ */
 function closePokemonCardZoomed() {
   let pokemonName = pokemonClickedOn;
   let pokemonCloseIn = pokemonName + '_close_In';
@@ -132,6 +194,11 @@ function closePokemonCardZoomed() {
   closePokemonCard(pokemonCloseInCard, pokemonName);
 }
 
+/**
+ * Closes the detailed Pokemon card and resets attributes.
+ * @param {HTMLElement} pokemonCloseInCard - The zoomed-in card element.
+ * @param {string} pokemonName - The name of the Pokemon.
+ */
 function closePokemonCard(pokemonCloseInCard, pokemonName) {
   if (isPokemonInCloseUp) {
     let pokemonCardsZoomed = document.getElementById('pokemon-cards-zoomed-in');
@@ -145,6 +212,10 @@ function closePokemonCard(pokemonCloseInCard, pokemonName) {
   }
 }
 
+/**
+ * Opens the detailed view for a Pokemon card.
+ * @param {string} pokemonName - The name of the Pokemon to open.
+ */
 function openPokemonCard(pokemonName) {
   let access = pokemonRelevantInfo[pokemonName];
   if (!isPokemonInCloseUp) {
@@ -156,6 +227,12 @@ function openPokemonCard(pokemonName) {
   }
 }
 
+/**
+ * Builds an object with elements and data for the zoomed-in Pokemon card.
+ * @param {Object} access - The Pokemon access object.
+ * @param {Array} resultArray - Array containing previous and next Pokemon names.
+ * @returns {Object} An object with zoomed-in card properties.
+ */
 function buildPokemonCardInCloseObject(access, resultArray) {
   return {
     'pokemonCardsZoomed': document.getElementById("pokemon-cards-zoomed-in"),
@@ -169,6 +246,10 @@ function buildPokemonCardInCloseObject(access, resultArray) {
   };
 }
 
+/**
+ * Sets up the zoomed-in view for a Pokemon card.
+ * @param {Object} access - The Pokemon access object.
+ */
 function getPokemonCardInClose(access) {
   let resultArray = returnNeighbouringPokemons(access["pokemonName"]);
   let obj = buildPokemonCardInCloseObject(access, resultArray);
@@ -177,12 +258,23 @@ function getPokemonCardInClose(access) {
   setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard);
 }
 
+/**
+ * Sets the left arrow and title for the zoomed-in card.
+ * @param {Object} obj - The zoomed-in card object.
+ * @param {Object} access - The Pokemon access object.
+ */
 function setLeftArrowAndTitle(obj, access) {
   setPokemonCardsZoomedAttributes(obj["pokemonCardsZoomed"]);
   getPokemonCardsZoomedArrowLeft(obj["pokemonCardsZoomed"], obj["previousPokemon"], obj["pokemonCloseIn"], access["pokemonName"]);
   getPokemonCardsZoomedTitle(obj["pokemonCloseIn"], obj["pokemonCardsZoomed"], access["pokemonName"]);
 }
 
+/**
+ * Sets the right arrow and remaining attributes for the zoomed-in card.
+ * @param {Object} obj - The zoomed-in card object.
+ * @param {Object} access - The Pokemon access object.
+ * @param {HTMLElement} pokemonCloseInCard - The zoomed-in card element.
+ */
 function setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard) {
   getPokemonCardsZoomedTypes(pokemonCloseInCard, access["pokemonTypes"]);
   setPokemonCardsZoomedImageAndBackground(pokemonCloseInCard, access["pokemonImage"], access["pokemonTypes"][0]["type"]["name"]);
@@ -191,6 +283,11 @@ function setRightArrowAndRemainingAttributes(obj, access, pokemonCloseInCard) {
   setRemainingAttributesInOpenPokemon();
 }
 
+/**
+ * Creates and appends charts for the Pokemon stats and main board.
+ * @param {Object} obj - The zoomed-in card object.
+ * @param {Object} access - The Pokemon access object.
+ */
 function createPokemonCharts(obj, access) {
   let pokemonCloseInCard = document.getElementById(obj["pokemonCloseIn"]);
   pokemonCloseInCard.innerHTML += `<div class="pokemonCloseInLowerPart"></div>`;
@@ -204,11 +301,22 @@ function createPokemonCharts(obj, access) {
   displayPokemonChart(statsCard, access["pokemonName"], obj["pokemonStatsDataset"]);
 }
 
+/**
+ * Sets the image and background color for the zoomed-in Pokemon card.
+ * @param {HTMLElement} pokemonCloseInCard - The zoomed-in card element.
+ * @param {string} pokemonImage - The URL of the Pokemon image.
+ * @param {string} backgroundColor - The background color class.
+ */
 function setPokemonCardsZoomedImageAndBackground(pokemonCloseInCard, pokemonImage, backgroundColor) {
   pokemonCloseInCard.innerHTML += `<img src='${pokemonImage}'>`;
   pokemonCloseInCard.classList.add(backgroundColor);
 }
 
+/**
+ * Creates a dataset array from Pokemon stats.
+ * @param {Array} pokemonStats - Array of Pokemon stat objects.
+ * @returns {Array} Array of base stat values.
+ */
 function createPokemonStatsDataset(pokemonStats) {
   let dataset = [];
   for (let i = 0; i < pokemonStats.length; i++) {
@@ -217,6 +325,11 @@ function createPokemonStatsDataset(pokemonStats) {
   return dataset;
 }
 
+/**
+ * Switches to the main board view and hides the stats chart.
+ * @param {string} pokemonStatsId - The ID of the stats chart element.
+ * @param {string} pokemonMainBoardId - The ID of the main board element.
+ */
 function getPokemonMainBoard(pokemonStatsId, pokemonMainBoardId) {
   let statsCard = document.getElementById(pokemonStatsId);
   let mainBoardCard = document.getElementById(pokemonMainBoardId);
@@ -226,6 +339,11 @@ function getPokemonMainBoard(pokemonStatsId, pokemonMainBoardId) {
   }
 }
 
+/**
+ * Switches to the stats chart view and hides the main board.
+ * @param {string} pokemonStatsId - The ID of the stats chart element.
+ * @param {string} pokemonMainBoardId - The ID of the main board element.
+ */
 function getPokemonStatBoard(pokemonStatsId, pokemonMainBoardId) {
   let statsCard = document.getElementById(pokemonStatsId);
   let mainBoardCard = document.getElementById(pokemonMainBoardId);
@@ -235,24 +353,41 @@ function getPokemonStatBoard(pokemonStatsId, pokemonMainBoardId) {
   }
 }
 
+/**
+ * Sets attributes for the canvas element used for charts.
+ * @param {HTMLElement} canvasElement - The canvas element.
+ * @param {string} pokemonStatsId - The ID for the canvas.
+ */
 function setCanvasElementAttributes(canvasElement, pokemonStatsId) {
   canvasElement.id = pokemonStatsId;
   canvasElement.className = 'canvasElement';
   canvasElement.style.display = "none";
 }
 
+/**
+ * Sets remaining attributes when opening the zoomed-in Pokemon view.
+ */
 function setRemainingAttributesInOpenPokemon() {
   document.body.style.overflow = 'hidden';
   container.classList.add('no-click');
   isPokemonInCloseUp = true;
 }
 
+/**
+ * Adds type elements to the zoomed-in Pokemon card.
+ * @param {HTMLElement} pokemonCloseInCard - The zoomed-in card element.
+ * @param {Array} pokemonTypes - Array of Pokemon type objects.
+ */
 function getPokemonCardsZoomedTypes(pokemonCloseInCard, pokemonTypes) {
   for (let j = 0; j < pokemonTypes.length; j++) {
     pokemonCloseInCard.innerHTML += `<div class="types">${pokemonTypes[j]["type"]["name"]}</div>`;
   }
 }
 
+/**
+ * Sets attributes for the zoomed-in cards container.
+ * @param {HTMLElement} pokemonCardsZoomed - The zoomed-in container element.
+ */
 function setPokemonCardsZoomedAttributes(pokemonCardsZoomed) {
   pokemonCardsZoomed.classList.remove('d-none');
   pokemonCardsZoomed.style.height = '100%';
@@ -260,6 +395,10 @@ function setPokemonCardsZoomedAttributes(pokemonCardsZoomed) {
   pokemonCardsZoomed.style.backgroundColor = 'rgba(0,0,0,0.8)';
 }
 
+/**
+ * Unsets attributes for the zoomed-in cards container.
+ * @param {HTMLElement} pokemonCardsZoomed - The zoomed-in container element.
+ */
 function unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed) {
   pokemonCardsZoomed.style.height = '0';
   pokemonCardsZoomed.style.width = '0';
@@ -268,6 +407,11 @@ function unsetPokemonCardsZoomedAttributes(pokemonCardsZoomed) {
   container.classList.remove('no-click');
 }
 
+/**
+ * Returns the neighbouring Pokemon names for navigation.
+ * @param {string} pokemonName - The current Pokemon name.
+ * @returns {Array} Array containing previous and next Pokemon names.
+ */
 function returnNeighbouringPokemons(pokemonName) {
   let index = pokemonsArray.indexOf(pokemonName);
   let resultArray = returnRightPokemonIndices(index);
@@ -276,6 +420,11 @@ function returnNeighbouringPokemons(pokemonName) {
   return [previous, next];
 }
 
+/**
+ * Calculates the indices for previous and next Pokemon based on current index.
+ * @param {number} index - The current index in the Pokemon array.
+ * @returns {Array} Array containing previous and next indices.
+ */
 function returnRightPokemonIndices(index) {
   if (index === 0) {
     return [pokemonsArray.length - 1, 1];
@@ -286,6 +435,12 @@ function returnRightPokemonIndices(index) {
   }
 }
 
+/**
+ * Shows the next Pokemon in the zoomed-in view.
+ * @param {string} nextPokemon - The name of the next Pokemon.
+ * @param {string} pokemonCloseIn - The ID of the zoomed-in card.
+ * @param {string} pokemonName - The current Pokemon name.
+ */
 function showNextPokemon(nextPokemon, pokemonCloseIn, pokemonName) {
   let pokemonCloseInCard = document.getElementById(pokemonCloseIn);
   if (pokemonArraySearched.length === 0) {
@@ -299,12 +454,23 @@ function showNextPokemon(nextPokemon, pokemonCloseIn, pokemonName) {
   }
 }
 
+/**
+ * Gets the next Pokemon in the search results array.
+ * @param {number} index - The current index in the search array.
+ * @returns {string} The name of the next Pokemon.
+ */
 function getNextPokemonInSearch(index) {
   if (pokemonArraySearched.length === 1) return pokemonArraySearched[0];
   if (index === pokemonArraySearched.length - 1) return pokemonArraySearched[0];
   return pokemonArraySearched[index + 1];
 }
 
+/**
+ * Shows the previous Pokemon in the zoomed-in view.
+ * @param {string} previousPokemon - The name of the previous Pokemon.
+ * @param {string} pokemonCloseIn - The ID of the zoomed-in card.
+ * @param {string} pokemonName - The current Pokemon name.
+ */
 function showPreviousPokemon(previousPokemon, pokemonCloseIn, pokemonName) {
   let pokemonCloseInCard = document.getElementById(pokemonCloseIn);
   if (pokemonArraySearched.length === 0) {
@@ -318,18 +484,33 @@ function showPreviousPokemon(previousPokemon, pokemonCloseIn, pokemonName) {
   }
 }
 
+/**
+ * Gets the previous Pokemon in the search results array.
+ * @param {number} index - The current index in the search array.
+ * @returns {string} The name of the previous Pokemon.
+ */
 function getPreviousPokemonInSearch(index) {
   if (pokemonArraySearched.length === 1) return pokemonArraySearched[0];
   if (index === 0) return pokemonArraySearched[pokemonArraySearched.length - 1];
   return pokemonArraySearched[index - 1];
 }
 
+/**
+ * Sets remaining attributes when closing the zoomed-in Pokemon view.
+ */
 function setRemainingAttributesInClosePokemon() {
   pokemonClickedOn = '';
   isPokemonInCloseUp = false;
   document.body.style.overflow = 'auto';
 }
 
+/**
+ * Removes attributes and elements when closing the zoomed-in card.
+ * @param {HTMLElement} pokemon - The original Pokemon card element.
+ * @param {HTMLElement} arrowLeft - The left arrow element.
+ * @param {HTMLElement} pokemonCloseInCard - The zoomed-in card element.
+ * @param {HTMLElement} arrowRight - The right arrow element.
+ */
 function removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonCloseInCard, arrowRight) {
   pokemon.classList.remove('d-none');
   arrowLeft.remove();
@@ -338,6 +519,9 @@ function removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonClose
 }
 
 // Loading more Pokemons
+/**
+ * Prepares the URL for loading more Pokemons by updating the offset.
+ */
 async function prepareURL() {
   let resultArray = iterateString(url);
   let lastCharacter = resultArray[0];
@@ -347,6 +531,9 @@ async function prepareURL() {
   await loadFurtherPokemons();
 }
 
+/**
+ * Loads and displays further Pokemons from the updated URL.
+ */
 async function loadFurtherPokemons() {
   handleSpinnerAndSetOverflow('show', 'hidden');
   let response = await fetch(url);
@@ -355,6 +542,11 @@ async function loadFurtherPokemons() {
   handleSpinnerAndSetOverflow('hide', 'visible');
 }
 
+/**
+ * Iterates through the URL string to find the offset value.
+ * @param {string} string - The URL string.
+ * @returns {Array} Array containing the offset value and its length.
+ */
 function iterateString(string) {
   for (let i = string.length - 1; i > 0; i--) {
     if (string[i] === "=") {
@@ -377,6 +569,9 @@ searchInput.addEventListener('input', function() {
   disableFurtherPokemon();
 });
 
+/**
+ * Disables the further Pokemon loading button based on search input.
+ */
 function disableFurtherPokemon() {
   let furtherPokemons = document.getElementById('furtherPokemons');
   if (searchInput.value.length > 2) {
@@ -386,6 +581,10 @@ function disableFurtherPokemon() {
   }
 }
 
+/**
+ * Prepares and displays search results based on the search term.
+ * @param {string} searchTerm - The search term entered by the user.
+ */
 function prepareToDisplaySearchResults(searchTerm) {
   let toShow = [];
   let notToShow = [];
@@ -400,6 +599,11 @@ function prepareToDisplaySearchResults(searchTerm) {
   pokemonArraySearched = toShow;
 }
 
+/**
+ * Displays the search results by setting display properties.
+ * @param {Array} toShow - Array of Pokemon names to show.
+ * @param {Array} notToShow - Array of Pokemon names to hide.
+ */
 function displaySearchResults(toShow, notToShow) {
   if (toShow.length < 11) {
     setDisplayForArray(toShow, 'block');
@@ -411,6 +615,11 @@ function displaySearchResults(toShow, notToShow) {
   }
 }
 
+/**
+ * Sets the display style for an array of Pokemon cards.
+ * @param {Array} array - Array of Pokemon names.
+ * @param {string} displayValue - The CSS display value ('block' or 'none').
+ */
 function setDisplayForArray(array, displayValue) {
   for (let pokemonName of array) {
     let pokemonID = pokemonName + '_card';
@@ -419,6 +628,9 @@ function setDisplayForArray(array, displayValue) {
   }
 }
 
+/**
+ * Removes the 'none' display style from all Pokemon cards.
+ */
 function removeDisplayNone() {
   for (let pokemonName of pokemonsArray) {
     let pokemonID = pokemonName + '_card';
@@ -428,6 +640,10 @@ function removeDisplayNone() {
 }
 
 // Utility functions
+/**
+ * Handles the visibility of the loading spinner overlay.
+ * @param {string} action - 'show' to display the overlay, 'hide' to hide it.
+ */
 function handleLoadingSpinnerVisibility(action) {
   let overlay = document.getElementById('loading-overlay');
   if (action === 'show') {
@@ -437,20 +653,74 @@ function handleLoadingSpinnerVisibility(action) {
   }
 }
 
+/**
+ * Handles the loading spinner and body overflow.
+ * @param {string} action - 'show' or 'hide' for the spinner.
+ * @param {string} overflow - The overflow value for the body.
+ */
 function handleSpinnerAndSetOverflow(action, overflow) {
   handleLoadingSpinnerVisibility(action);
   document.body.style.overflow = overflow;
 }
 
+/**
+ * Fetches Pokemon data from the given URL.
+ * @param {string} pokemonURL - The URL to fetch Pokemon data from.
+ * @returns {Promise<Object>} The JSON response from the API.
+ */
 async function fetchPokemonData(pokemonURL) {
   let response = await fetch(pokemonURL);
   return await response.json();
 }
 
 // Placeholder functions (assuming they exist in html_templates.js or elsewhere)
+/**
+ * Returns the HTML for the index tab.
+ * @param {string} tabId - The ID for the tab.
+ * @param {string} statsId - The ID for the stats.
+ * @param {string} mainBoardId - The ID for the main board.
+ * @returns {string} The HTML string.
+ */
 function returnIndexTab(tabId, statsId, mainBoardId) { /* Implementation */ }
+
+/**
+ * Returns the HTML for the Pokemon main board.
+ * @param {string} boardId - The ID for the board.
+ * @param {Array} mainInfo - The main information array.
+ * @returns {string} The HTML string.
+ */
 function returnPokemonMainBoard(boardId, mainInfo) { /* Implementation */ }
+
+/**
+ * Sets the left arrow for the zoomed-in card.
+ * @param {HTMLElement} container - The container element.
+ * @param {string} prev - The previous Pokemon name.
+ * @param {string} closeIn - The close-in ID.
+ * @param {string} name - The Pokemon name.
+ */
 function getPokemonCardsZoomedArrowLeft(container, prev, closeIn, name) { /* Implementation */ }
+
+/**
+ * Sets the title for the zoomed-in card.
+ * @param {string} closeIn - The close-in ID.
+ * @param {HTMLElement} container - The container element.
+ * @param {string} name - The Pokemon name.
+ */
 function getPokemonCardsZoomedTitle(closeIn, container, name) { /* Implementation */ }
+
+/**
+ * Sets the right arrow for the zoomed-in card.
+ * @param {HTMLElement} container - The container element.
+ * @param {string} next - The next Pokemon name.
+ * @param {string} closeIn - The close-in ID.
+ * @param {string} name - The Pokemon name.
+ */
 function getPokemonCardsZoomedArrowRight(container, next, closeIn, name) { /* Implementation */ }
+
+/**
+ * Displays the Pokemon chart.
+ * @param {HTMLElement} card - The chart card element.
+ * @param {string} name - The Pokemon name.
+ * @param {Array} dataset - The stats dataset.
+ */
 function displayPokemonChart(card, name, dataset) { /* Implementation */ }
