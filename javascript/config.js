@@ -37,7 +37,6 @@ async function init() {
     handleSpinnerAndSetOverflow('hide', 'visible');
   } catch (error) {
     console.error('Error fetching Pokemon data:', error);
-    // Optionally, display an error message to the user
     alert('Failed to load Pokemon data. Please check your internet connection and try again.');
   }
 }

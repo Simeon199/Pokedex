@@ -3,10 +3,20 @@
  */
 function loadFurtherPokemons() {
   if (currentPokemonIndex < 151) {
+    handleSpinnerAndSetOverflow('show', 'hidden');
     let start = currentPokemonIndex;
     let end = Math.min(currentPokemonIndex + 20, 151);
-    fetchPokemonData(start, end);
-    currentPokemonIndex = end;
+    let apiUrl = `https://pokeapi.co/api/v2/pokemon?limit=${end - start}&offset=${start}`;
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => displayPokemons(data).then(() => {
+        currentPokemonIndex = end;
+        handleSpinnerAndSetOverflow('hide', 'visible');
+      }))
+      .catch(error => {
+        console.error('Error loading more Pokemon:', error);
+        handleSpinnerAndSetOverflow('hide', 'visible');
+      });
   } else {
     let furtherPokemons = document.getElementById('furtherPokemons');
     furtherPokemons.classList.add('d-none');

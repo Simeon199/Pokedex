@@ -57,8 +57,18 @@ function removePlaceholder(id) {
  * @param {string} containerId - The ID of the container to show the spinner in.
  */
 function showSpinner(containerId) {
+  if (!containerId) {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+      overlay.classList.remove('d-none');
+      document.body.style.overflow = 'hidden';
+    }
+    return;
+  }
   let container = document.getElementById(containerId);
-  container.innerHTML = '<div class="spinner"></div>';
+  if (container) {
+    container.innerHTML = '<div class="spinner"></div>';
+  }
 }
 
 /**
@@ -67,7 +77,9 @@ function showSpinner(containerId) {
  */
 function hideSpinner(containerId) {
   let container = document.getElementById(containerId);
-  container.innerHTML = '';
+  if (container) {
+    container.innerHTML = '';
+  }
 }
 
 /**
