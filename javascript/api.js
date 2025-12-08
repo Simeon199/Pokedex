@@ -3,6 +3,7 @@
  * @param {string} pokemonURL - The URL to fetch Pokemon data from.
  * @returns {Promise<Object>} The JSON response from the API.
  */
+
 async function fetchPokemonData(pokemonURL) {
   let response = await fetch(pokemonURL);
   return await response.json();
@@ -12,6 +13,7 @@ async function fetchPokemonData(pokemonURL) {
  * Fetches and displays a list of Pokemons from the API response.
  * @param {Object} responseAsJson - The JSON response from the Pokemon API.
  */
+
 async function displayPokemons(responseAsJson) {
   let pokemons = responseAsJson['results'];
   for (let i = 0; i < pokemons.length; i++) {
@@ -29,6 +31,7 @@ async function displayPokemons(responseAsJson) {
  * @param {Object} pokemon - The Pokemon data object from the API.
  * @param {string} pokemonName - The name of the Pokemon.
  */
+
 function loadPokemonInfo(pokemon, pokemonName) {
   let pokemonID = pokemonName + '_card';
   let pokemonImage = pokemon["sprites"]["other"]["official-artwork"]["front_default"];
@@ -44,6 +47,7 @@ function loadPokemonInfo(pokemon, pokemonName) {
  * @param {Object} pokemonDataAsJson - The Pokemon data object.
  * @returns {Array} An array containing height, weight, base experience, and abilities.
  */
+
 function createMainInfo(pokemonDataAsJson) {
   let height = pokemonDataAsJson["height"];
   let weight = pokemonDataAsJson["weight"];
@@ -58,6 +62,7 @@ function createMainInfo(pokemonDataAsJson) {
  * @param {Array} abilities - Array of ability objects.
  * @returns {Array} Array of formatted ability names.
  */
+
 function extractAbilities(abilities) {
   let allAbilities = [];
   for (let i = 0; i < abilities.length; i++) {
@@ -74,6 +79,7 @@ function extractAbilities(abilities) {
  * @param {string} ability - The ability name.
  * @returns {string} The ability name with the first letter capitalized.
  */
+
 function capitalizeFirstLetter(ability) {
   return ability[0].toUpperCase() + ability.slice(1);
 }
@@ -83,6 +89,7 @@ function capitalizeFirstLetter(ability) {
  * @param {string} ability - The ability name with possible hyphens.
  * @returns {string} The formatted ability name.
  */
+
 function handleHyphensInAbility(ability) {
   let chars = ability.split('');
   for (let j = 0; j < chars.length; j++) {
@@ -103,6 +110,7 @@ function handleHyphensInAbility(ability) {
  * @param {Array} mainInfo - Main information array.
  * @returns {Object} An object containing all Pokemon details.
  */
+
 function buildPokemonDetail(pokemonName, pokemonID, pokemonImage, pokemonTypes, pokemonStats, mainInfo) {
   return {
     "pokemonName": pokemonName.toLowerCase(),

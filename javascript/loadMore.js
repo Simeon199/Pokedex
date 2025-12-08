@@ -1,6 +1,7 @@
 /**
  * Loads more Pokemon data when the "Load More" button is clicked.
  */
+
 function loadFurtherPokemons() {
   if (currentPokemonIndex < 151) {
     handleSpinnerAndSetOverflow('show', 'hidden');
@@ -26,6 +27,7 @@ function loadFurtherPokemons() {
 /**
  * Prepares the URL for loading more Pokemon by incrementing the offset.
  */
+
 async function prepareURL() {
   let resultArray = iterateString(url);
   let lastCharacter = resultArray[0];
@@ -40,6 +42,7 @@ async function prepareURL() {
  * Updates the current Pokemon index after loading more.
  * @param {number} newIndex - The new current index.
  */
+
 function updateCurrentPokemonIndex(newIndex) {
   currentPokemonIndex = newIndex;
 }
@@ -48,6 +51,7 @@ function updateCurrentPokemonIndex(newIndex) {
  * Checks if more Pokemon can be loaded.
  * @returns {boolean} True if more Pokemon can be loaded, false otherwise.
  */
+
 function canLoadMorePokemon() {
   return currentPokemonIndex < 151;
 }

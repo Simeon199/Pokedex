@@ -3,6 +3,7 @@
  * @param {string} pokemonName - The current Pokemon name.
  * @returns {Array} Array containing previous and next Pokemon names.
  */
+
 function returnNeighbouringPokemons(pokemonName) {
   let index = pokemonsArray.indexOf(pokemonName);
   let resultArray = returnRightPokemonIndices(index);
@@ -16,6 +17,7 @@ function returnNeighbouringPokemons(pokemonName) {
  * @param {number} index - The current index in the Pokemon array.
  * @returns {Array} Array containing previous and next indices.
  */
+
 function returnRightPokemonIndices(index) {
   if (index === 0) {
     return [pokemonsArray.length - 1, 1];
@@ -32,6 +34,7 @@ function returnRightPokemonIndices(index) {
  * @param {string} pokemonCloseIn - The ID of the zoomed-in card.
  * @param {string} pokemonName - The current Pokemon name.
  */
+
 function showNextPokemon(nextPokemon, pokemonCloseIn, pokemonName) {
   let pokemonCloseInCard = document.getElementById(pokemonCloseIn);
   if (pokemonArraySearched.length === 0) {
@@ -50,6 +53,7 @@ function showNextPokemon(nextPokemon, pokemonCloseIn, pokemonName) {
  * @param {number} index - The current index in the search array.
  * @returns {string} The name of the next Pokemon.
  */
+
 function getNextPokemonInSearch(index) {
   if (pokemonArraySearched.length === 1) return pokemonArraySearched[0];
   if (index === pokemonArraySearched.length - 1) return pokemonArraySearched[0];
@@ -62,6 +66,7 @@ function getNextPokemonInSearch(index) {
  * @param {string} pokemonCloseIn - The ID of the zoomed-in card.
  * @param {string} pokemonName - The current Pokemon name.
  */
+
 function showPreviousPokemon(previousPokemon, pokemonCloseIn, pokemonName) {
   let pokemonCloseInCard = document.getElementById(pokemonCloseIn);
   if (pokemonArraySearched.length === 0) {
@@ -80,6 +85,7 @@ function showPreviousPokemon(previousPokemon, pokemonCloseIn, pokemonName) {
  * @param {number} index - The current index in the search array.
  * @returns {string} The name of the previous Pokemon.
  */
+
 function getPreviousPokemonInSearch(index) {
   if (pokemonArraySearched.length === 1) return pokemonArraySearched[0];
   if (index === 0) return pokemonArraySearched[pokemonArraySearched.length - 1];
@@ -89,6 +95,7 @@ function getPreviousPokemonInSearch(index) {
 /**
  * Sets remaining attributes when closing the zoomed-in Pokemon view.
  */
+
 function setRemainingAttributesInClosePokemon() {
   pokemonClickedOn = '';
   isPokemonInCloseUp = false;
@@ -102,6 +109,7 @@ function setRemainingAttributesInClosePokemon() {
  * @param {HTMLElement} pokemonCloseInCard - The zoomed-in card element.
  * @param {HTMLElement} arrowRight - The right arrow element.
  */
+
 function removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonCloseInCard, arrowRight) {
   pokemon.classList.remove('d-none');
   arrowLeft.remove();
@@ -109,7 +117,11 @@ function removeAttributesFunctionInClosePokemon(pokemon, arrowLeft, pokemonClose
   arrowRight.remove();
 }
 
-// Search functionality
+/**
+ * The search term extracted from user input, trimmed of whitespace and converted to lowercase for case-insensitive searching.
+ * @type {string}
+ */
+
 searchInput.addEventListener('input', function() {
   let searchTerm = this.value.trim().toLowerCase();
   pokemonArraySearched = [];
@@ -124,6 +136,7 @@ searchInput.addEventListener('input', function() {
 /**
  * Disables the further Pokemon loading button based on search input.
  */
+
 function disableFurtherPokemon() {
   let furtherPokemons = document.getElementById('furtherPokemons');
   if (searchInput.value.length > 2) {
@@ -137,6 +150,7 @@ function disableFurtherPokemon() {
  * Prepares and displays search results based on the search term.
  * @param {string} searchTerm - The search term entered by the user.
  */
+
 function prepareToDisplaySearchResults(searchTerm) {
   let toShow = [];
   let notToShow = [];
@@ -156,6 +170,7 @@ function prepareToDisplaySearchResults(searchTerm) {
  * @param {Array} toShow - Array of Pokemon names to show.
  * @param {Array} notToShow - Array of Pokemon names to hide.
  */
+
 function displaySearchResults(toShow, notToShow) {
   if (toShow.length < 11) {
     setDisplayForArray(toShow, 'block');
@@ -172,6 +187,7 @@ function displaySearchResults(toShow, notToShow) {
  * @param {Array} array - Array of Pokemon names.
  * @param {string} displayValue - The CSS display value ('block' or 'none').
  */
+
 function setDisplayForArray(array, displayValue) {
   for (let pokemonName of array) {
     let pokemonID = pokemonName + '_card';
@@ -183,6 +199,7 @@ function setDisplayForArray(array, displayValue) {
 /**
  * Removes the 'none' display style from all Pokemon cards.
  */
+
 function removeDisplayNone() {
   for (let pokemonName of pokemonsArray) {
     let pokemonID = pokemonName + '_card';

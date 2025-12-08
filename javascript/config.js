@@ -10,7 +10,11 @@ let container = document.getElementById('container');
 let pokemonLabels = ["hp", "attack", "defense", "special-attack", "special-defense", "speed"];
 let currentPokemonIndex = 0;
 
-// Initialization
+/**
+ * @type {HTMLElement | null}
+ * @description Reference to the DOM element with ID 'pokemon-cards-zoomed-in', used as a container for zoomed-in Pokemon cards.
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
   let popupContainer = document.getElementById('pokemon-cards-zoomed-in');
   popupContainer.addEventListener('click', (event) => {
@@ -24,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * Initializes the application by fetching and displaying the initial set of Pokemons.
  * Shows the loading spinner, fetches data from the API, displays Pokemons, and hides the spinner.
  */
+
 async function init() {
   try {
     handleSpinnerAndSetOverflow('show', 'hidden');
@@ -41,11 +46,21 @@ async function init() {
   }
 }
 
+/**
+ * Handles the visibility of a loading spinner and sets the body's overflow style.
+ * @param {string} stringOne - The visibility state for the loading spinner (e.g., "visible" or "hidden").
+ * @param {string} stringTwo - The overflow style to apply to the document body (e.g., "hidden" or "auto").
+ */
 
 function handleSpinnerAndSetOverflow(stringOne, stringTwo){
   handleLoadingSpinnerVisibility(stringOne);
   document.body.style.overflow = stringTwo;
 }
+
+/**
+ * Handles the visibility of the loading spinner overlay.
+ * @param {string} string - The action to perform: 'show' to display the overlay, 'hide' to hide it.
+ */
 
 function handleLoadingSpinnerVisibility(string){
   if(string === 'show'){
@@ -56,4 +71,5 @@ function handleLoadingSpinnerVisibility(string){
 }
 
 // Initialize the app when the page loads
+
 window.addEventListener('load', init);

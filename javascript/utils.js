@@ -3,6 +3,7 @@
  * @param {string} string - The string to capitalize.
  * @returns {string} The capitalized string.
  */
+
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -12,6 +13,7 @@ function capitalizeFirstLetter(string) {
  * @param {string} str - The string to convert.
  * @returns {string} The title case string.
  */
+
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase());
 }
@@ -22,6 +24,7 @@ function toTitleCase(str) {
  * @param {number} size - The desired length.
  * @returns {string} The formatted number string.
  */
+
 function padNumber(num, size) {
   let s = num + '';
   while (s.length < size) s = '0' + s;
@@ -33,6 +36,7 @@ function padNumber(num, size) {
  * @param {string} id - The ID for the placeholder element.
  * @returns {HTMLElement} The created placeholder element.
  */
+
 function createPlaceholder(id) {
   let placeholder = document.createElement('div');
   placeholder.id = id;
@@ -45,6 +49,7 @@ function createPlaceholder(id) {
  * Removes a placeholder element.
  * @param {string} id - The ID of the placeholder element to remove.
  */
+
 function removePlaceholder(id) {
   let placeholder = document.getElementById(id);
   if (placeholder) {
@@ -56,6 +61,7 @@ function removePlaceholder(id) {
  * Shows a loading spinner.
  * @param {string} containerId - The ID of the container to show the spinner in.
  */
+
 function showSpinner(containerId) {
   if (!containerId) {
     const overlay = document.getElementById('loading-overlay');
@@ -75,6 +81,7 @@ function showSpinner(containerId) {
  * Hides the loading spinner.
  * @param {string} containerId - The ID of the container to hide the spinner in.
  */
+
 function hideSpinner(containerId) {
   let container = document.getElementById(containerId);
   if (container) {
@@ -88,6 +95,7 @@ function hideSpinner(containerId) {
  * @param {number} wait - The wait time in milliseconds.
  * @returns {Function} The debounced function.
  */
+
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -106,6 +114,7 @@ function debounce(func, wait) {
  * @param {number} limit - The limit time in milliseconds.
  * @returns {Function} The throttled function.
  */
+
 function throttle(func, limit) {
   let inThrottle;
   return function() {
@@ -124,6 +133,7 @@ function throttle(func, limit) {
  * @param {HTMLElement} el - The element to check.
  * @returns {boolean} True if the element is in the viewport, false otherwise.
  */
+
 function isElementInViewport(el) {
   const rect = el.getBoundingClientRect();
   return (
@@ -137,6 +147,7 @@ function isElementInViewport(el) {
 /**
  * Scrolls to the top of the page smoothly.
  */
+
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -145,6 +156,7 @@ function scrollToTop() {
  * Gets the current scroll position.
  * @returns {number} The current scroll position.
  */
+
 function getScrollPosition() {
   return window.pageYOffset || document.documentElement.scrollTop;
 }
@@ -153,6 +165,7 @@ function getScrollPosition() {
  * Sets the scroll position.
  * @param {number} position - The position to scroll to.
  */
+
 function setScrollPosition(position) {
   window.scrollTo(0, position);
 }
@@ -161,6 +174,7 @@ function setScrollPosition(position) {
  * Creates a unique ID.
  * @returns {string} A unique ID string.
  */
+
 function generateUniqueId() {
   return '_' + Math.random().toString(36).substr(2, 9);
 }
@@ -170,6 +184,7 @@ function generateUniqueId() {
  * @param {Object} obj - The object to clone.
  * @returns {Object} The cloned object.
  */
+
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
@@ -180,6 +195,7 @@ function deepClone(obj) {
  * @param {Object} source - The source object.
  * @returns {Object} The merged object.
  */
+
 function mergeObjects(target, source) {
   return Object.assign({}, target, source);
 }
@@ -189,6 +205,7 @@ function mergeObjects(target, source) {
  * @param {*} value - The value to check.
  * @returns {boolean} True if the value is empty, false otherwise.
  */
+
 function isEmpty(value) {
   if (value == null) return true;
   if (typeof value === 'string' || Array.isArray(value)) return value.length === 0;
@@ -201,6 +218,7 @@ function isEmpty(value) {
  * @param {Date} date - The date to format.
  * @returns {string} The formatted date string.
  */
+
 function formatDate(date) {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -213,6 +231,7 @@ function formatDate(date) {
  * Gets the current timestamp.
  * @returns {number} The current timestamp.
  */
+
 function getCurrentTimestamp() {
   return Date.now();
 }
@@ -222,6 +241,7 @@ function getCurrentTimestamp() {
  * @param {number} bytes - The number of bytes.
  * @returns {string} The human-readable size string.
  */
+
 function formatBytes(bytes) {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -235,6 +255,7 @@ function formatBytes(bytes) {
  * @param {string} str - The string to iterate.
  * @returns {Array} Array containing the last number as string and its length.
  */
+
 function iterateString(str) {
   let match = str.match(/(\d+)$/);
   if (match) {
